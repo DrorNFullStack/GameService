@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GameService.Inter
+namespace GameService.GameRepositories
 {
     public interface IGameRepository
     {
         public Task<Game> CreateGameAsync();
-        public Task<Game> CloseGameAsync(Guid id);
+        public Task CloseGameAsync(Guid id);
         public Task<Game> GetGameAsync(Guid id);
         
     }

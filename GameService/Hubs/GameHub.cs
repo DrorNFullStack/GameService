@@ -1,5 +1,5 @@
-﻿using GameLib.Inter;
-using GameService.Inter;
+﻿using GameService.Inter;
+using GameService.GameRepositories;
 using GameService.Models;
 using Microsoft.AspNetCore.SignalR;
 using System;

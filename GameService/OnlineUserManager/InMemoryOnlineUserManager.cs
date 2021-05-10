@@ -25,5 +25,9 @@ namespace GameService.OnlineUserManager
         {
             return Task.Run(() => dic.Remove(userID));
         }
+
+        public Task UpdateUserGame(string connectionId, Guid gameID) =>
+            Task.Run(() =>
+                        { if (dic.TryGetValue(connectionId, out User user)) user.GameID = gameID; });
     }
 }

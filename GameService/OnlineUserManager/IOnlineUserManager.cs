@@ -11,5 +11,6 @@ namespace GameService.OnlineUserManager
         Task<IEnumerable<User>> GetLiveUsers();
         Task<bool> AddLiveUser(User user);
         Task<bool> RemoveLiveUser(string userID);
+        Task UpdateUserGame(string connectionId, Guid gameID);
     }
 }

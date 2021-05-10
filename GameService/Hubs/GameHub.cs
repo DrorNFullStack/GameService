@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GameService.OnlineUserManager;
 
 namespace GameService.Hubs
 {
@@ -13,14 +14,24 @@ namespace GameService.Hubs
     {
         //Only a hub, connecting two sides
         private readonly IGameRepository _gameRepository;
-
-        public GameHub(IGameRepository gameRepository)
+        private readonly IOnlineUserManager onlineUserManager;
+        public GameHub(IGameRepository gameRepository, IOnlineUserManager onlineUserManager)
         {
             _gameRepository = gameRepository;
+            this.onlineUserManager = onlineUserManager;
         }
 
-        public override Task OnConnectedAsync() => base.OnConnectedAsync();
-        public override Task OnDisconnectedAsync(Exception exception) => base.OnDisconnectedAsync(exception);
+        public override async Task OnConnectedAsync()
+        {
+            await onlineUserManager.AddLiveUser(new User { UserID = Context.ConnectionId });
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            await onlineUserManager.RemoveLiveUser(Context.ConnectionId);
+            await base.OnDisconnectedAsync(exception);
+        }
 
         public async Task RequestGame(User receiver, User sender) 
         {
@@ -58,6 +69,7 @@ namespace GameService.Hubs
             user.GameID = game.GameID;
             
             await Groups.AddToGroupAsync(Context.ConnectionId, user.GameID.ToString());
+            await UdateUserManager(game);
 
             await Clients.Group(user.GameID.ToString()).GameCreatedAsync(game);
         }
@@ -70,14 +82,16 @@ namespace GameService.Hubs
             var game = await _gameRepository.GetGameAsync(user.GameID);
 
             if (game is null) return;
-
+            await UdateUserManager(game);
             await Groups.AddToGroupAsync(Context.ConnectionId, game.GameID.ToString());
         }
+
 
         public async Task LeaveGameAsync(User user)
         {
             var game = await _gameRepository.GetGameAsync(user.GameID);
             if (game is null) return;
+            await UdateUserManager(null);
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, user.GameID.ToString());
         }
 
@@ -94,5 +108,7 @@ namespace GameService.Hubs
 
             await _gameRepository.CloseGameAsync(game.GameID);
         }
+        private async Task UdateUserManager(GameLib.Models.Game game) =>
+            await onlineUserManager.UpdateUserGame(Context.ConnectionId, game?.GameID ?? Guid.Empty);
     }
 }

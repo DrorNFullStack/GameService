@@ -1,5 +1,6 @@
 using GameService.GameRepositories;
 using GameService.Hubs;
+using GameService.OnlineUserManager;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -25,6 +26,7 @@ namespace GameService
                        .AllowCredentials();
             }));
             services.AddSingleton<IGameRepository, InMemoryGameRepository>();
+            services.AddSingleton<IOnlineUserManager, InMemoryOnlineUserManager>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -14,7 +14,7 @@ namespace GameService.GameRepositories
             return Task.FromResult(_mem.Remove(id));
         }
 
-        public async Task<Game> CreateGameAsync()
+        public async Task<Game> GenerateGameAsync()
         {
             Game game = new Game();
             game.GameID = Guid.NewGuid();

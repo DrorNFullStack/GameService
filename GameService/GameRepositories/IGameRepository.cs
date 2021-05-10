@@ -8,7 +8,7 @@ namespace GameService.GameRepositories
 {
     public interface IGameRepository
     {
-        public Task<Game> CreateGameAsync();
+        public Task<Game> GenerateGameAsync();
         public Task CloseGameAsync(Guid id);
         public Task<Game> GetGameAsync(Guid id);
     }

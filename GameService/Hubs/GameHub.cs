@@ -22,17 +22,43 @@ namespace GameService.Hubs
         public override Task OnConnectedAsync() => base.OnConnectedAsync();
         public override Task OnDisconnectedAsync(Exception exception) => base.OnDisconnectedAsync(exception);
 
+        public async Task RequestGame(User receiver, User sender) 
+        {
+            /*Request to join a game, assuming both players are in agreement, a game will be created and both will join it. */
+
+            await Clients.User(receiver.UserID).GameRequested(sender);
+        }
+
+        public async Task Invite(User host, IEnumerable<string> users)
+        {
+            if (host.GameID == Guid.Empty)
+            {
+                await Clients.Caller.ErrorHandling("No host found");
+                return;
+            }
+
+            var game = await _gameRepository.GetGameAsync(host.GameID);
+
+            if (game is null)
+            {
+                await Clients.Caller.ErrorHandling("No game found");
+                return;
+            }
+
+            await Clients.Users(users).InvitedToGameAsync(game.GameID.ToString());
+        }
+
         public async Task CreateGameAsync(User user)
         {
             /*Create the game, have the creator join it first by adding him to the group. Second player joining will be handled in function
             JoinGameAsync below.*/
 
-            var game = await _gameRepository.CreateGameAsync();
+            var game = await _gameRepository.GenerateGameAsync();
 
             user.GameID = game.GameID;
             
             await Groups.AddToGroupAsync(Context.ConnectionId, user.GameID.ToString());
-            
+
             await Clients.Group(user.GameID.ToString()).GameCreatedAsync(game);
         }
 
@@ -42,6 +68,7 @@ namespace GameService.Hubs
             user's GameID according to the game he wanted to join. */
 
             var game = await _gameRepository.GetGameAsync(user.GameID);
+
             if (game is null) return;
 
             await Groups.AddToGroupAsync(Context.ConnectionId, game.GameID.ToString());

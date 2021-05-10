@@ -11,6 +11,5 @@ namespace GameService.GameRepositories
         public Task<Game> CreateGameAsync();
         public Task CloseGameAsync(Guid id);
         public Task<Game> GetGameAsync(Guid id);
-        
     }
 }

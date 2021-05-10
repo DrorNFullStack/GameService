@@ -42,6 +42,7 @@ namespace GameService.Hubs
             user's GameID according to the game he wanted to join. */
 
             var game = await _gameRepository.GetGameAsync(user.GameID);
+            if (game is null) return;
 
             await Groups.AddToGroupAsync(Context.ConnectionId, game.GameID.ToString());
         }
@@ -49,7 +50,7 @@ namespace GameService.Hubs
         public async Task LeaveGameAsync(User user)
         {
             var game = await _gameRepository.GetGameAsync(user.GameID);
-
+            if (game is null) return;
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, user.GameID.ToString());
         }
 

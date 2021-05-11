@@ -12,7 +12,6 @@ namespace GameService.Hubs
 {
     public class GameHub : Hub<IGameClient>
     {
-        //Only a hub, connecting two sides
         private readonly IGameRepository _gameRepository;
         private readonly IOnlineUserManager onlineUserManager;
         public GameHub(IGameRepository gameRepository, IOnlineUserManager onlineUserManager)
@@ -35,8 +34,6 @@ namespace GameService.Hubs
 
         public async Task RequestGame(User receiver, User sender) 
         {
-            /*Request to join a game, assuming both players are in agreement, a game will be created and both will join it. */
-
             await Clients.User(receiver.UserID).GameRequested(sender);
         }
 
@@ -61,9 +58,6 @@ namespace GameService.Hubs
 
         public async Task CreateGameAsync(User user)
         {
-            /*Create the game, have the creator join it first by adding him to the group. Second player joining will be handled in function
-            JoinGameAsync below.*/
-
             var game = await _gameRepository.GenerateGameAsync();
 
             user.GameID = game.GameID;
@@ -76,9 +70,6 @@ namespace GameService.Hubs
 
         public async Task JoinGameAsync(User user)
         {
-            /*Find the game. Use the game ID to let the user into the game. Using the user.GameID in GetGameAsync 'cus we're changing the
-            user's GameID according to the game he wanted to join. */
-
             var game = await _gameRepository.GetGameAsync(user.GameID);
 
             if (game is null) return;

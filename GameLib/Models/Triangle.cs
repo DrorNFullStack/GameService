@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace GameLib.Models
 {
-    class Triangle
+    public class Triangle
     {
+        public int Position { get; set; }
+        public IEnumerable<GamePiece> GamePieces { get; set; }
     }
 }

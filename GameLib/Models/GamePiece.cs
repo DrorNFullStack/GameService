@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GameLib.Models
+﻿namespace GameLib.Models
 {
-    class GamePiece
+    public class GamePiece
     {
+        public string Color { get; set; }
     }
 }

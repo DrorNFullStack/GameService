@@ -88,11 +88,6 @@ namespace GameService.Hubs
 
         public async Task CloseGameAsync(User user)
         {
-            //If both the users' game ID isn't the current game's ID, basically, both of them leaving, close the game. 
-
-            /*In layman's terms: The hub needs only to close the game upon request, the request to close the game shall come once the last user
-            has left it. The hub is only to open/close connections, not to handle logic as to when or why*/
-
             var game = await _gameRepository.GetGameAsync(user.GameID);
 
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, user.GameID.ToString());

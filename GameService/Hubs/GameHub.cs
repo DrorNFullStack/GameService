@@ -7,9 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameService.OnlineUserManager;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GameService.Hubs
 {
+    [Authorize]
     public class GameHub : Hub<IGameClient>
     {
         private readonly IGameRepository _gameRepository;

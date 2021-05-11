@@ -15,22 +15,22 @@ namespace GameService.Hubs
     public class GameHub : Hub<IGameClient>
     {
         private readonly IGameRepository _gameRepository;
-        private readonly IOnlineUserManager onlineUserManager;
+        private readonly IOnlineUserManager _onlineUserManager;
         public GameHub(IGameRepository gameRepository, IOnlineUserManager onlineUserManager)
         {
             _gameRepository = gameRepository;
-            this.onlineUserManager = onlineUserManager;
+            this._onlineUserManager = onlineUserManager;
         }
 
         public override async Task OnConnectedAsync()
         {
-            await onlineUserManager.AddLiveUser(new User { UserID = Context.ConnectionId });
+            await _onlineUserManager.AddLiveUser(new User { UserID = Context.ConnectionId });
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            await onlineUserManager.RemoveLiveUser(Context.ConnectionId);
+            await _onlineUserManager.RemoveLiveUser(Context.ConnectionId);
             await base.OnDisconnectedAsync(exception);
         }
 
@@ -97,6 +97,6 @@ namespace GameService.Hubs
             await _gameRepository.CloseGameAsync(game.GameID);
         }
         private async Task UdateUserManager(GameLib.Models.Game game) =>
-            await onlineUserManager.UpdateUserGame(Context.ConnectionId, game?.GameID ?? Guid.Empty);
+            await _onlineUserManager.UpdateUserGame(Context.ConnectionId, game?.GameID ?? Guid.Empty);
     }
 }

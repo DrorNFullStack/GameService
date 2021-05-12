@@ -28,6 +28,7 @@ namespace GameLib
                 return false;
             }
 
+            //preform the action
 
             //action completed
             turnKeeper.EndTurn(player);

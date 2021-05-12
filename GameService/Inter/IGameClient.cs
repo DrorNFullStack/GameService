@@ -9,7 +9,7 @@ namespace GameService.Inter
 {
     public interface IGameClient
     {
-        Task GameCreatedAsync(Game game); 
+        Task GameCreatedAsync(); 
         Task GameRequested(User user); 
         Task InvitedToGameAsync(string gameID);
         Task ErrorHandling(string msg);

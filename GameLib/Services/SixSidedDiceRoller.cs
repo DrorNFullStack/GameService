@@ -1,6 +1,7 @@
 ﻿using GameLib.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace GameLib.Services
@@ -20,8 +21,19 @@ namespace GameLib.Services
 
         public IEnumerable<DiceResult> Roll(int amount)
         {
+            List<DiceResult> drList = new List<DiceResult>();
+            int[] array = new int[6];
+
+            var oldRoll = new DiceResult();
+
             for (int i = 0; i < amount; i++)
-                yield return Roll();
+            {
+                drList.Add(Roll());
+
+            }
+            drList.ForEach(a => array[a.Roll-1] = drList.Count(z => z.Roll == a.Roll));
+
+           
         }
     }
 }

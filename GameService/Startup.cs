@@ -32,14 +32,18 @@ namespace GameService
             services.AddSingleton<IGameRepository, InMemoryGameRepository>();
             services.AddSingleton<IOnlineUserManager, InMemoryOnlineUserManager>();
 
-            services.AddAuthentication(o =>
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
             {
-                o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
-            {
-                o.SecurityTokenValidators.Clear();
-                o.SecurityTokenValidators.Add(new JwtTokenValidator());
+                o.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("DrorIsTheBestAroundNoOneEverGonnaShutYouDown")),
+                    ValidIssuer = "http://localhost:5000/",
+                    ValidAudience = "http://localhost:5000/",
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ClockSkew = TimeSpan.Zero
+                };
             });
             services.AddAuthorization(o =>
             {

@@ -21,7 +21,19 @@ namespace GameLib
         }
 
         public Dictionary<int,Triangle> Board { get; set; }
+        public void StartGame(Player player1, Player player2)
+        {
+            Board = new Dictionary<int, Triangle>();
+            for (int i = 1; i <= 24; i++)
+            {
+                Board.Add(i, new Triangle 
+                { 
+                    Position = i,
+                    GamePieces = new LinkedList<GamePiece>()
+                });
+            }
 
+        }
         public IEnumerable<GameAction> PerformAction(GameAction action, Player player)
         {
             var active = turnKeeper.GetActivePlayer();

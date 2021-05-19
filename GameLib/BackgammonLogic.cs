@@ -14,11 +14,12 @@ namespace GameLib
         private readonly IGameActionsManager gameActionsManager;
         private readonly IGamePieceFactory gamePieceFactory;
 
-        public BackgammonLogic(IDiceRoller<DiceResult> diceRoller, ITurnKeeper turnKeeper, IGameActionsManager gameActionsManager)
+        public BackgammonLogic(IDiceRoller<DiceResult> diceRoller, ITurnKeeper turnKeeper, IGameActionsManager gameActionsManager, IGamePieceFactory gamePieceFactory)
         {
             this.diceRoller = diceRoller;
             this.turnKeeper = turnKeeper;
             this.gameActionsManager = gameActionsManager;
+            this.gamePieceFactory = gamePieceFactory;
         }
 
         public Dictionary<int,Triangle> Board { get; set; }
@@ -27,8 +28,7 @@ namespace GameLib
             Board = new Dictionary<int, Triangle>();
             for (int i = 1; i <= 24; i++)
             {
-                var pieceR = new GamePiece { Color = "red" };
-                var pieceB = new GamePiece { Color = "black" };
+                IEnumerable<GamePiece> pieces = gamePieceFactory.Create(2, "Red");
             }
 
         }

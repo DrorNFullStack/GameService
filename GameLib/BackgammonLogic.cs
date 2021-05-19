@@ -12,55 +12,36 @@ namespace GameLib
         private readonly IDiceRoller<DiceResult> diceRoller;
         private readonly ITurnKeeper turnKeeper;
         private readonly IGameActionsManager gameActionsManager;
-        private readonly IGamePieceFactory gamePieceFactory;
+        private readonly IGameBoardFactory gameBoardFactory;
 
-        public BackgammonLogic(IDiceRoller<DiceResult> diceRoller, ITurnKeeper turnKeeper, IGameActionsManager gameActionsManager, IGamePieceFactory gamePieceFactory)
+        public BackgammonLogic(IDiceRoller<DiceResult> diceRoller, ITurnKeeper turnKeeper, IGameActionsManager gameActionsManager, IGameBoardFactory gameBoardFactory)
         {
             this.diceRoller = diceRoller;
             this.turnKeeper = turnKeeper;
             this.gameActionsManager = gameActionsManager;
-            this.gamePieceFactory = gamePieceFactory;
+            this.gameBoardFactory = gameBoardFactory;
         }
-
-        public Dictionary<int,Triangle> Board { get; set; }
-        public void StartGame(Player player1, Player player2)
+        public GameBoard Board { get; set; }
+        /// <summary>
+        /// Start a new Game, with the two players.
+        /// </summary>
+        /// <param name="player1"></param>
+        /// <param name="player2"></param>
+        /// <returns>The starting player</returns>
+        public Player StartGame(Player player1, Player player2)
         {
-            Board = new Dictionary<int, Triangle>();
-            for (int i = 1; i <= 24; i++)
-            {
-                IEnumerable<GamePiece> pieces = new GamePiece[1]; 
+            //Generate board
+            Board = gameBoardFactory.Create();
 
-                if (i == 1) pieces = gamePieceFactory.Create(2, "Red");
-                if (i == 6) pieces = gamePieceFactory.Create(5, "Black");
-                if (i == 8) pieces = gamePieceFactory.Create(3, "Black");
-                if (i==12) pieces = gamePieceFactory.Create(5, "Red");
-                if (i==13) pieces = gamePieceFactory.Create(5, "Black");
-                if (i==17) pieces = gamePieceFactory.Create(3, "Red");
-                if (i==19) pieces = gamePieceFactory.Create(5, "Red");
-                if (i==24) pieces = gamePieceFactory.Create(2, "Black");
+            //add players to turn queue
+            turnKeeper.AddPlayer(player1);
+            turnKeeper.AddPlayer(player2);
 
-                Board.Add(i, new Triangle { Position = i, GamePieces = new LinkedList<GamePiece>(pieces) });
-            }
-
+            //return who's starting
+            return turnKeeper.GetActivePlayer();
         }
-        public IEnumerable<GameAction> PerformAction(GameAction action, Player player)
-        {
-            var active = turnKeeper.GetActivePlayer();
-            if (!active.Equals(player))
-            {
-                return null;
-            }
 
-            //preform the action
-            var availableActions = gameActionsManager.Act(action, Board, player);
-
-            
-            //action completed
-            if (player.RemainingActions < 1)
-                turnKeeper.EndTurn(player);
-
-            return availableActions;
-        }
+        //start the players turn
         public Turn StartTurn(Player player)
         {
             if (!player.Equals(turnKeeper.GetActivePlayer()))
@@ -79,6 +60,25 @@ namespace GameLib
                 DiceResults = diceResults,
                 Board = boardView
             };
+        }
+
+        public IEnumerable<GameAction> PerformAction(GameAction action, Player player)
+        {
+            var active = turnKeeper.GetActivePlayer();
+            if (!active.Equals(player))
+            {
+                return null;
+            }
+
+            //preform the action
+            var availableActions = gameActionsManager.Act(action, Board, player);
+
+            
+            //action completed
+            if (player.RemainingActions < 1)
+                turnKeeper.EndTurn(player);
+
+            return availableActions;
         }
     }
 }

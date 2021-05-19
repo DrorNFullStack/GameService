@@ -33,6 +33,7 @@ namespace GameLib.Services
             }
             drList.ForEach(a => array[a.Roll-1] = drList.Count(z => z.Roll == a.Roll));
 
+            throw new NotImplementedException();
            
         }
     }

@@ -5,6 +5,6 @@ namespace GameLib.Services
 {
     internal interface IBackgammonActionValidator
     {
-        bool Validate(GameAction action, Dictionary<int, Triangle> board, string color);
+        bool Validate(GameAction action, GameBoard board, Player player);
     }
 }

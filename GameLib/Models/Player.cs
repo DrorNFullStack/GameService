@@ -10,5 +10,7 @@ namespace GameLib.Models
         public string Color { get; set; }
         public int RemainingActions { get; set; }
         public List<DiceResult> DiceResults { get; set; }
+        public bool IsDouble { get; set; }
+        public DirectionEnum Direction { get; set; }
     }
 }

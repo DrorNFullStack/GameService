@@ -15,66 +15,89 @@ namespace GameLib.Services
             this.backgammonActionValidator = backgammonActionValidator;
         }
 
-        public IEnumerable<GameAction> Act(GameAction action, Dictionary<int, Triangle> board, Player player)
+        public bool Act(GameAction action, GameBoard board, Player player, out IEnumerable<GameAction> gameActions)
         {
-            bool isValidMove = backgammonActionValidator.Validate(action, board, player.Color);
+            gameActions = null;
+            bool isValidMove = backgammonActionValidator.Validate(action, board, player);
 
             if (isValidMove == false)
                 //illegal move
-                return null;
-
-
-            //move is legal
-            board[action.DestinationPosition].GamePieces.AddLast(board[action.StartingPosition].GamePieces.Last);
-            board[action.StartingPosition].GamePieces.RemoveLast();
+                return false;
+            GamePiece gamePiece = null;
+            //Starting from Bar 
+            if (action.StartingPosition < 0)
+            {
+                gamePiece = board.Bar.Pieces.FirstOrDefault(gp => gp.Color.Equals(player.Color));
+                board.Bar.Pieces.Remove(gamePiece);
+            }
+            else
+            {
+                //Starting from a Triangle
+                gamePiece = board.Triangles[action.StartingPosition].GamePieces.Last.Value;
+                board.Triangles[action.StartingPosition].GamePieces.RemoveLast();
+            }
+            //Going Safe
+            if (action.DestinationPosition == 0)
+            {
+                board.SafePieces.Add(gamePiece);
+            }
+            //going to home / empty triangle
+            else if (board.Triangles[action.DestinationPosition].GamePieces.Last?.Value.Color.Equals(player.Color) ?? true)
+            {
+                board.Triangles[action.DestinationPosition].GamePieces.AddLast(gamePiece);
+            }
+            //going to KILL
+            else if (board.Triangles[action.DestinationPosition].GamePieces.Count == 1)
+            {
+                var deadPiece = board.Triangles[action.DestinationPosition].GamePieces.Last.Value;
+                board.Triangles[action.DestinationPosition].GamePieces.RemoveLast();
+                board.Bar.Pieces.Add(deadPiece);
+                board.Triangles[action.DestinationPosition].GamePieces.AddLast(gamePiece);
+            }
+            //consume an action
             player.RemainingActions--;
 
-            if (player.RemainingActions > 0) return GetActions(board, player, player.DiceResults);
+            //mark die as used if not a Double
+            if (player.IsDouble == false)
+                player.DiceResults.Find(dr => dr.Roll == action.RelevantRoll.Roll).WasUsed = true;
 
-            else return null;
+            gameActions = GetActions(board, player);
+            return true;
         }
 
-        public IEnumerable<GameAction> GetActions(Dictionary<int, Triangle> board, Player player, IEnumerable<DiceResult> diceResults)
+        public IEnumerable<GameAction> GetActions(GameBoard board, Player player)
         {
-            var gameActions = new List<GameAction>();
-            foreach (var triangle in board)
+            var possibleActions = new List<GameAction>();
+            var haveInBar = board.Bar.Pieces.Any(gp => gp.Color.Equals(player.Color));
+            foreach (var diceResult in player.DiceResults)
             {
-                //if this triangle is controlled by the players color
-                if (triangle.Value.GamePieces.First.Value.Color == player.Color)
+                if (haveInBar)
                 {
-                    //go through the given rolls
-                    foreach (var dr in diceResults)
+                    GameAction action = new GameAction
                     {
-                        //check the roll is still available
-                        if (dr.WasUsed) continue;
-                        var dest = triangle.Key + dr.Roll; //one player goes forward the other will go backwards?
-                        //validate dest for dr
-                        if (triangle.Key + dr.Roll > board.Count)
+                        RelevantRoll = diceResult,
+                        StartingPosition = 0,
+                        DestinationPosition = player.Direction > 0 ? diceResult.Roll : 25 - diceResult.Roll
+                    };
+                    var validation = backgammonActionValidator.Validate(action, board, player);
+                    if (validation) possibleActions.Add(action);
+                }
+                else
+                {
+                    foreach (var triangle in board.Triangles.Where(t => t.Value.GamePieces?.First().Color.Equals(player.Color) ?? false))
+                    {
+                        GameAction action = new GameAction
                         {
-                            //roll will result in a higher than exists board size
-                        }
-                        if (board[triangle.Key + dr.Roll].GamePieces.Last.Value.Color == player.Color)
-                        {
-                            //dest will reach same color
-                        }
-                        else if (board[triangle.Key + dr.Roll].GamePieces.Count == 1)
-                        {
-                            //dest will reach other color but can eat
-                        }
-                        else
-                        {
-                            //dest will reach other color but can't eat
-                        }
-                        gameActions.Add(new GameAction
-                        {
-                            StartingPosition = triangle.Key,
-                            DestinationPosition = dest
-                        });
-
+                            RelevantRoll = diceResult,
+                            StartingPosition = triangle.Value.Position,
+                            DestinationPosition = player.Direction > 0 ? diceResult.Roll + triangle.Value.Position : triangle.Value.Position - diceResult.Roll 
+                        };
+                        var validation = backgammonActionValidator.Validate(action, board, player);
+                        if (validation) possibleActions.Add(action);
                     }
                 }
             }
-            throw new NotImplementedException();
+            return possibleActions;
         }
     }
 }

@@ -5,7 +5,7 @@ namespace GameLib.Services
 {
     internal interface IGameActionsManager
     {
-        IEnumerable<GameAction> Act(GameAction action, Dictionary<int, Triangle> board, Player player);
-        IEnumerable<GameAction> GetActions(Dictionary<int, Triangle> board, Player player, IEnumerable<DiceResult> diceResults);
+        bool Act(GameAction action, GameBoard board, Player player, out IEnumerable<GameAction> gameActions);
+        IEnumerable<GameAction> GetActions(GameBoard board, Player player);
     }
 }

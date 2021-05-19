@@ -8,30 +8,30 @@ namespace GameLib.Services
 {
     class GameActionsManager : IGameActionsManager
     {
+        private readonly IBackgammonActionValidator backgammonActionValidator;
+
+        public GameActionsManager(IBackgammonActionValidator backgammonActionValidator)
+        {
+            this.backgammonActionValidator = backgammonActionValidator;
+        }
+
         public IEnumerable<GameAction> Act(GameAction action, Dictionary<int, Triangle> board, Player player)
         {
-            if (player.Color != board[action.StartingPosition].GamePieces.First?.Value.Color 
-                    || (player.Color != board[action.DestinationPosition].GamePieces.First?.Value.Color
-                         && board[action.DestinationPosition].GamePieces.Count > 1))
-                    //illegal move
-                    return null;
+            bool isValidMove = backgammonActionValidator.Validate(action, board, player.Color);
 
+            if (isValidMove == false)
+                //illegal move
+                return null;
 
-            var usedRoll = player.DiceResults.FirstOrDefault(
-                (dr) => dr.Roll.Equals(Math.Abs(action.DestinationPosition - action.StartingPosition
-                )));
-
-            if (usedRoll is null || usedRoll.WasUsed) return null;
 
             //move is legal
             board[action.DestinationPosition].GamePieces.AddLast(board[action.StartingPosition].GamePieces.Last);
             board[action.StartingPosition].GamePieces.RemoveLast();
             player.RemainingActions--;
 
-
-
-
             if (player.RemainingActions > 0) return GetActions(board, player, player.DiceResults);
+
+            else return null;
         }
 
         public IEnumerable<GameAction> GetActions(Dictionary<int, Triangle> board, Player player, IEnumerable<DiceResult> diceResults)
@@ -53,11 +53,11 @@ namespace GameLib.Services
                         {
                             //roll will result in a higher than exists board size
                         }
-                        if(board[triangle.Key + dr.Roll].GamePieces.Last.Value.Color == player.Color)
+                        if (board[triangle.Key + dr.Roll].GamePieces.Last.Value.Color == player.Color)
                         {
                             //dest will reach same color
                         }
-                        else if(board[triangle.Key + dr.Roll].GamePieces.Count == 1)
+                        else if (board[triangle.Key + dr.Roll].GamePieces.Count == 1)
                         {
                             //dest will reach other color but can eat
                         }
@@ -65,12 +65,12 @@ namespace GameLib.Services
                         {
                             //dest will reach other color but can't eat
                         }
-                        gameActions.Add(new GameAction 
-                        { 
+                        gameActions.Add(new GameAction
+                        {
                             StartingPosition = triangle.Key,
-                            DestinationPosition = dest 
+                            DestinationPosition = dest
                         });
-                        
+
                     }
                 }
             }

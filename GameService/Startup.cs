@@ -40,13 +40,7 @@ namespace GameService
                     .Build();
             });
             services.AddSignalR();
-            services.AddCors(options => options.AddPolicy("CorsPolicy",
-            builder =>
-            {
-                builder.AllowAnyMethod().AllowAnyHeader()
-                       .WithOrigins(Environment.GetEnvironmentVariable("CLIENT_URL"))
-                       .AllowCredentials();
-            }));
+            services.AddCors();
             services.AddSingleton<IOnlineUserManager, InMemoryOnlineUserManager>();
         }
 
@@ -57,7 +51,7 @@ namespace GameService
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors("CorsPolicy");
+            app.UseCors(options=>options.SetIsOriginAllowed((origin)=> true).AllowAnyMethod().AllowAnyHeader().AllowCredentials());
             app.UseRouting();
 
             app.UseAuthentication();

@@ -28,7 +28,18 @@ namespace GameLib
             Board = new Dictionary<int, Triangle>();
             for (int i = 1; i <= 24; i++)
             {
-                IEnumerable<GamePiece> pieces = gamePieceFactory.Create(2, "Red");
+                IEnumerable<GamePiece> pieces = new GamePiece[1]; 
+
+                if (i == 1) pieces = gamePieceFactory.Create(2, "Red");
+                if (i == 6) pieces = gamePieceFactory.Create(5, "Black");
+                if (i == 8) pieces = gamePieceFactory.Create(3, "Black");
+                if (i==12) pieces = gamePieceFactory.Create(5, "Red");
+                if (i==13) pieces = gamePieceFactory.Create(5, "Black");
+                if (i==17) pieces = gamePieceFactory.Create(3, "Red");
+                if (i==19) pieces = gamePieceFactory.Create(5, "Red");
+                if (i==24) pieces = gamePieceFactory.Create(2, "Black");
+
+                Board.Add(i, new Triangle { Position = i, GamePieces = new LinkedList<GamePiece>(pieces) });
             }
 
         }

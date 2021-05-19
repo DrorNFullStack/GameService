@@ -9,8 +9,10 @@ namespace GameService.OnlineUserManager
     public interface IOnlineUserManager
     {
         Task<IEnumerable<User>> GetLiveUsers();
+        Task<IEnumerable<User>> GetAvailbeUsers();
         Task<bool> AddLiveUser(User user);
-        Task<bool> RemoveLiveUser(string userID);
+        Task<User> RemoveLiveUser(string userID);
         Task UpdateUserGame(string connectionId, Guid gameID);
+        Task<IEnumerable<User>> GetUnavailbeUsers();
     }
 }

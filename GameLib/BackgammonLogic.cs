@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace GameLib
 {
-    internal class BackgammonLogic
+    public class BackgammonLogic
     {
         //public Queue<GameAction> TurnHistory { get; set; }
 
@@ -48,21 +48,21 @@ namespace GameLib
                 return null;
 
             //Get Dice Res
-            var diceResults = diceRoller.Roll(2);
+            player.DiceResults = diceRoller.Roll(2);
 
             //Get Possible Actions
-            var possibleActions = gameActionsManager.GetActions(Board, player, diceResults);
+            var possibleActions = gameActionsManager.GetActions(Board, player);
 
-            var boardView = Board.Values.Select(triangle => triangle);
+            var boardView = Board.Triangles.Values;
             return new Turn
             {
                 PossibleActions = possibleActions,
-                DiceResults = diceResults,
+                DiceResults = player.DiceResults,
                 Board = boardView
             };
         }
 
-        public IEnumerable<GameAction> PerformAction(GameAction action, Player player)
+        public Turn PerformAction(GameAction action, Player player)
         {
             var active = turnKeeper.GetActivePlayer();
             if (!active.Equals(player))
@@ -71,14 +71,23 @@ namespace GameLib
             }
 
             //preform the action
-            var availableActions = gameActionsManager.Act(action, Board, player);
+            var success = gameActionsManager.Act(action, Board, player, out IEnumerable<GameAction> availableActions);
 
-            
+            if (!success)
+            {
+                return null;
+            }
+
             //action completed
             if (player.RemainingActions < 1)
                 turnKeeper.EndTurn(player);
 
-            return availableActions;
+            return new Turn
+            {
+                PossibleActions = availableActions,
+                DiceResults = player.DiceResults,
+                Board = Board.Triangles.Values
+            };
         }
     }
 }

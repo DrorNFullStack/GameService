@@ -16,18 +16,36 @@ namespace GameService.OnlineUserManager
             return Task.Run(() => dic.TryAdd(user.UserID, user));
         }
 
+        public async Task<IEnumerable<User>> GetAvailbeUsers()
+        {
+            var users = await GetLiveUsers();
+            return users.Where(u => u.GameID.Equals(Guid.Empty));
+        }
+
         public Task<IEnumerable<User>> GetLiveUsers()
         {
             return Task.Run(() => dic.Values.Select(k => k));
         }
 
-        public Task<bool> RemoveLiveUser(string userID)
+        public async Task<IEnumerable<User>> GetUnavailbeUsers()
         {
-            return Task.Run(() => dic.Remove(userID));
+            var users = await GetLiveUsers();
+            return users.Where(u => !u.GameID.Equals(Guid.Empty));
+        }
+
+        public Task<User> RemoveLiveUser(string userID)
+        {
+            return Task.Run(() =>
+            {
+                var user = dic[userID];
+                dic.Remove(userID);
+                return user;
+            });
         }
 
         public Task UpdateUserGame(string connectionId, Guid gameID) =>
             Task.Run(() =>
                         { if (dic.TryGetValue(connectionId, out User user)) user.GameID = gameID; });
+
     }
 }

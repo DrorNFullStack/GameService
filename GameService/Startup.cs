@@ -1,21 +1,16 @@
 using GameService.GameRepositories;
 using GameService.Hubs;
 using GameService.OnlineUserManager;
-using GameService.TokenValidators;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GameService
 {
@@ -23,16 +18,7 @@ namespace GameService
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSignalR();
-            services.AddCors(options => options.AddPolicy("CorsPolicy",
-            builder =>
-            {
-                builder.AllowAnyMethod().AllowAnyHeader()
-                       .WithOrigins(Environment.GetEnvironmentVariable("CLIENT_URL"))
-                       .AllowCredentials();
-            }));
-            services.AddSingleton<IGameRepository, InMemoryGameRepository>();
-            services.AddSingleton<IOnlineUserManager, InMemoryOnlineUserManager>();
+            //services.AddSingleton<IGameRepository, InMemoryGameRepository>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
             {
@@ -53,6 +39,15 @@ namespace GameService
                     .RequireClaim(ClaimTypes.Name)
                     .Build();
             });
+            services.AddSignalR();
+            services.AddCors(options => options.AddPolicy("CorsPolicy",
+            builder =>
+            {
+                builder.AllowAnyMethod().AllowAnyHeader()
+                       .WithOrigins(Environment.GetEnvironmentVariable("CLIENT_URL"))
+                       .AllowCredentials();
+            }));
+            services.AddSingleton<IOnlineUserManager, InMemoryOnlineUserManager>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -62,10 +57,12 @@ namespace GameService
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors("CorsPolicy");
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-            app.UseCors("CorsPolicy");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHub<GameHub>("/game");

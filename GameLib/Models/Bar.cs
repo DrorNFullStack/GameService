@@ -8,5 +8,6 @@ namespace GameLib.Models
     {
         public List<GamePiece> Pieces { get; set; }
         public bool IsEmpty => Pieces.Count == 0;
+        public string PiecesColor => Pieces?[0]?.Color;
     }
 }

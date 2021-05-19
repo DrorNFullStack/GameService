@@ -42,7 +42,8 @@ namespace GameLib.Services
                 board.SafePieces.Add(gamePiece);
             }
             //going to home / empty triangle
-            else if (board.Triangles[action.DestinationPosition].GamePieces.Last?.Value.Color.Equals(player.Color) ?? true)
+            else if (board.Triangles[action.DestinationPosition].PiecesColor.Equals(player.Color) ||
+                     board.Triangles[action.DestinationPosition].GamePieces.Count < 1)
             {
                 board.Triangles[action.DestinationPosition].GamePieces.AddLast(gamePiece);
             }
@@ -59,7 +60,7 @@ namespace GameLib.Services
 
             //mark die as used if not a Double
             if (player.IsDouble == false)
-                player.DiceResults.Find(dr => dr.Roll == action.RelevantRoll.Roll).WasUsed = true;
+                player.DiceResults.First(dr => dr.Roll == action.RelevantRoll.Roll).WasUsed = true;
 
             gameActions = GetActions(board, player);
             return true;
@@ -84,7 +85,7 @@ namespace GameLib.Services
                 }
                 else
                 {
-                    foreach (var triangle in board.Triangles.Where(t => t.Value.GamePieces?.First().Color.Equals(player.Color) ?? false))
+                    foreach (var triangle in board.Triangles.Where(t => t.Value.PiecesColor.Equals(player.Color)))
                     {
                         GameAction action = new GameAction
                         {

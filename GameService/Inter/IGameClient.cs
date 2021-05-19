@@ -13,5 +13,7 @@ namespace GameService.Inter
         Task GameRequested(User user); 
         Task InvitedToGameAsync(string gameID);
         Task ErrorHandling(string msg);
+        Task LobbyUpdatedAsync(User user);
+        Task ReciveFullLobbyAsync(IEnumerable<User> lobby);
     }
 }

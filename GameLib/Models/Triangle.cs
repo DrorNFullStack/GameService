@@ -6,5 +6,6 @@ namespace GameLib.Models
     {
         public int Position { get; set; }
         public LinkedList<GamePiece> GamePieces { get; set; }
+        public string PiecesColor => GamePieces?.Last?.Value?.Color ?? string.Empty;
     }
 }

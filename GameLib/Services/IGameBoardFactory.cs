@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GameLib.Services
 {
-    interface IGameBoardFactory
+    public interface IGameBoardFactory
     {
         GameBoard Create();
     }

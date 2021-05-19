@@ -24,7 +24,7 @@ namespace GameLib.Services
                     break;
             }
             //if player has gp on bar he can't move from triangles
-            if (action.StartingPosition > 0 && board.Bar.Pieces.Any(gp => gp.Color.Equals(player.Color))) return false;
+            if (action.StartingPosition > 0 && board.Bar.PiecesColor.Equals(player.Color)) return false;
 
             //if wants to leave Bar
             if (action.StartingPosition < 0)
@@ -48,7 +48,7 @@ namespace GameLib.Services
 
             //more than one, not player's color
             if (board.Triangles[action.DestinationPosition].GamePieces.Count > 1 &&
-                !board.Triangles[action.DestinationPosition].GamePieces.Last.Value.Color.Equals(player.Color)) return false;
+                !board.Triangles[action.DestinationPosition].PiecesColor.Equals(player.Color)) return false;
 
             if (action.DestinationPosition == 0)
             {

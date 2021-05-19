@@ -12,6 +12,7 @@ namespace GameLib
         private readonly IDiceRoller<DiceResult> diceRoller;
         private readonly ITurnKeeper turnKeeper;
         private readonly IGameActionsManager gameActionsManager;
+        private readonly IGamePieceFactory gamePieceFactory;
 
         public BackgammonLogic(IDiceRoller<DiceResult> diceRoller, ITurnKeeper turnKeeper, IGameActionsManager gameActionsManager)
         {
@@ -26,11 +27,8 @@ namespace GameLib
             Board = new Dictionary<int, Triangle>();
             for (int i = 1; i <= 24; i++)
             {
-                Board.Add(i, new Triangle 
-                { 
-                    Position = i,
-                    GamePieces = new LinkedList<GamePiece>()
-                });
+                var pieceR = new GamePiece { Color = "red" };
+                var pieceB = new GamePiece { Color = "black" };
             }
 
         }

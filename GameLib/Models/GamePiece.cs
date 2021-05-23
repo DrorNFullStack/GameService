@@ -2,6 +2,6 @@
 {
     public class GamePiece
     {
-        public string Color { get; set; }
+        public DirectionEnum ControlledBy { get; set; }
     }
 }

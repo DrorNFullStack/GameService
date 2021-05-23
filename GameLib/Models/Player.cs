@@ -7,7 +7,6 @@ namespace GameLib.Models
         public int Score { get; set; }
         public string PlayerID { get; set; }
         public string Name { get; set; }
-        public string Color { get; set; }
         public int RemainingActions { get; set; }
         public IEnumerable<DiceResult> DiceResults { get; set; }
         public bool IsDouble { get; set; }

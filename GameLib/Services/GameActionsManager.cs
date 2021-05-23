@@ -27,7 +27,7 @@ namespace GameLib.Services
             //Starting from Bar 
             if (action.StartingPosition < 0)
             {
-                gamePiece = board.Bar.Pieces.FirstOrDefault(gp => gp.Color.Equals(player.Color));
+                gamePiece = board.Bar.Pieces.FirstOrDefault(gp => gp.ControlledBy.Equals(player.Direction));
                 board.Bar.Pieces.Remove(gamePiece);
             }
             else
@@ -42,7 +42,7 @@ namespace GameLib.Services
                 board.SafePieces.Add(gamePiece);
             }
             //going to home / empty triangle
-            else if (board.Triangles[action.DestinationPosition].PiecesColor.Equals(player.Color) ||
+            else if (board.Triangles[action.DestinationPosition].PiecesColor.Equals(player.Direction) ||
                      board.Triangles[action.DestinationPosition].GamePieces.Count < 1)
             {
                 board.Triangles[action.DestinationPosition].GamePieces.AddLast(gamePiece);
@@ -69,7 +69,7 @@ namespace GameLib.Services
         public IEnumerable<GameAction> GetActions(GameBoard board, Player player)
         {
             var possibleActions = new List<GameAction>();
-            var haveInBar = board.Bar.Pieces.Any(gp => gp.Color.Equals(player.Color));
+            var haveInBar = board.Bar.Pieces.Any(gp => gp.ControlledBy.Equals(player.Direction));
             foreach (var diceResult in player.DiceResults)
             {
                 if (haveInBar)
@@ -85,7 +85,7 @@ namespace GameLib.Services
                 }
                 else
                 {
-                    foreach (var triangle in board.Triangles.Where(t => t.Value.PiecesColor.Equals(player.Color)))
+                    foreach (var triangle in board.Triangles.Where(t => t.Value.PiecesColor.Equals(player.Direction)))
                     {
                         GameAction action = new GameAction
                         {

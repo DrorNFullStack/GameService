@@ -5,6 +5,6 @@ namespace GameLib.Services
 {
     public interface IGamePieceFactory
     {
-        IEnumerable<GamePiece> Create(int amountOfPieces, string color);
+        IEnumerable<GamePiece> Create(int amountOfPieces, DirectionEnum? color);
     }
 }

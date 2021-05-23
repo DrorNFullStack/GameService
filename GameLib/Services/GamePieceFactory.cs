@@ -5,11 +5,11 @@ namespace GameLib.Services
 {
     public class GamePieceFactory : IGamePieceFactory
     {
-        public IEnumerable<GamePiece> Create(int amountOfPieces, string color)
+        public IEnumerable<GamePiece> Create(int amountOfPieces, DirectionEnum? direction)
         {
             for (int i = 0; i < amountOfPieces; i++)
             {
-                yield return new GamePiece { Color = color };
+                yield return new GamePiece { ControlledBy = direction ??DirectionEnum.ClockWise };
             }
         }
     }

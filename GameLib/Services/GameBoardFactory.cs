@@ -23,38 +23,38 @@ namespace GameLib.Services
 
                 int position = i;
                 int amount = 0;
-                string color = null;
+                DirectionEnum? direction = null;
 
                 switch (i)
                 {
                     case 0: break;
                     case 1:
                         amount = 2;
-                        color = "Red";
+                        direction = DirectionEnum.AntiClockWise;
                         break;
                     case 6:
                         amount = 5;
-                        color = "Black";
+                        direction = DirectionEnum.ClockWise;
                         break;
                     case 8:
                         amount = 3;
-                        color = "Black";
+                        direction = DirectionEnum.ClockWise;
                         break;
                     case 12:
                         amount = 5;
-                        color = "Red";
+                        direction = DirectionEnum.AntiClockWise;
                         break;
                 }
 
                 //Player 1 prespective flow
-                var pieces = gamePieceFactory.Create(amount, color);
+                var pieces = gamePieceFactory.Create(amount, direction);
                 var triangle = new Triangle { Position = position, GamePieces = new LinkedList<GamePiece>(pieces) };
                 board.Add(triangle.Position, triangle);
 
                 //Player 2 prespective flow
                 position = length - i + 1;
-                color = color == "Red" ? "Black" : "Red";
-                pieces = gamePieceFactory.Create(amount, color);
+                direction = direction == DirectionEnum.AntiClockWise ? DirectionEnum.ClockWise : DirectionEnum.AntiClockWise;
+                pieces = gamePieceFactory.Create(amount, direction);
                 triangle = new Triangle { Position = position, GamePieces = new LinkedList<GamePiece>(pieces) };
                 board.Add(triangle.Position, triangle);
             }

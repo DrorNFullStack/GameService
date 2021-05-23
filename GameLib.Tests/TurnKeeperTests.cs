@@ -12,6 +12,7 @@ namespace GameLib.Tests
         [Fact]
         public void IsTurnTracked()
         {
+            //Arrange
             var turnKeeper = new TurnKeeper();
 
             var player1 = new Player
@@ -26,10 +27,10 @@ namespace GameLib.Tests
                 Direction = DirectionEnum.AntiClockWise,
                 Name = "Dror"
             };
-
-            //act 
             turnKeeper.AddPlayer(player1);
             turnKeeper.AddPlayer(player2);
+
+            //Act 
             var activePlayer = turnKeeper.GetActivePlayer();
 
             //Assert

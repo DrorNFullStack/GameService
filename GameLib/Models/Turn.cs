@@ -7,5 +7,6 @@ namespace GameLib.Models
         public IEnumerable<GameAction> PossibleActions { get; set; }
         public IEnumerable<DiceResult> DiceResults { get; set; }
         public IEnumerable<Triangle> Board { get; set; }
+        public Player ActivePlayer { get; internal set; }
     }
 }

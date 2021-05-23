@@ -5,7 +5,7 @@ using System.Text;
 
 namespace GameLib.Services
 {
-    class GameBoardFactory : IGameBoardFactory
+   public class GameBoardFactory : IGameBoardFactory
     {
         private readonly IGamePieceFactory gamePieceFactory;
 
@@ -60,7 +60,10 @@ namespace GameLib.Services
             }
             return new GameBoard 
             {
-                Bar = new Bar(),
+                Bar = new Bar 
+                {
+                    Pieces = new List<GamePiece>()
+                },
                 SafePieces = new List<GamePiece>(),
                 Triangles = board
             };

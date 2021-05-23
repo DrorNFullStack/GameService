@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GameLib.Services
 {
-    class GamePieceFactory : IGamePieceFactory
+    public class GamePieceFactory : IGamePieceFactory
     {
         public IEnumerable<GamePiece> Create(int amountOfPieces, string color)
         {

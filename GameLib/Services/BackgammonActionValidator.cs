@@ -16,10 +16,10 @@ namespace GameLib.Services
             //validate direction
             switch (player.Direction)
             {
-                case DirectionEnum.ClockWise:
+                case DirectionEnum.AntiClockWise:
                     if (action.DestinationPosition - action.StartingPosition < 0) return false;
                     break;
-                case DirectionEnum.AntiClockWise:
+                case DirectionEnum.ClockWise:
                     if (action.DestinationPosition - action.StartingPosition > 0) return false;
                     break;
             }

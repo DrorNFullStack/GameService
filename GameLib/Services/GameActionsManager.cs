@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GameLib.Services
 {
-    class GameActionsManager : IGameActionsManager
+    public class GameActionsManager : IGameActionsManager
     {
         private readonly IBackgammonActionValidator backgammonActionValidator;
 

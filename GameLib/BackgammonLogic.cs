@@ -28,7 +28,7 @@ namespace GameLib
         /// <param name="player1"></param>
         /// <param name="player2"></param>
         /// <returns>The starting player</returns>
-        public Player StartGame(Player player1, Player player2)
+        public Turn StartGame(Player player1, Player player2)
         {
             //Generate board
             Board = gameBoardFactory.Create();
@@ -38,7 +38,11 @@ namespace GameLib
             turnKeeper.AddPlayer(player2);
 
             //return who's starting
-            return turnKeeper.GetActivePlayer();
+            return new Turn
+            {
+                Board = Board.Triangles.Values,
+                ActivePlayer = turnKeeper.GetActivePlayer()
+        };
         }
 
         //start the players turn
@@ -58,7 +62,8 @@ namespace GameLib
             {
                 PossibleActions = possibleActions,
                 DiceResults = player.DiceResults,
-                Board = boardView
+                Board = boardView,
+                ActivePlayer = turnKeeper.GetActivePlayer()
             };
         }
 
@@ -86,7 +91,8 @@ namespace GameLib
             {
                 PossibleActions = availableActions,
                 DiceResults = player.DiceResults,
-                Board = Board.Triangles.Values
+                Board = Board.Triangles.Values,
+                ActivePlayer = turnKeeper.GetActivePlayer()
             };
         }
     }

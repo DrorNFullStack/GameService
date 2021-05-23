@@ -17,13 +17,11 @@ namespace GameLib.Tests
 
             var player1 = new Player
             {
-                Color = "Red",
                 Direction = DirectionEnum.ClockWise,
                 Name = "Tomer"
             };
             var player2 = new Player
             {
-                Color = "Black",
                 Direction = DirectionEnum.AntiClockWise,
                 Name = "Dror"
             };
@@ -43,13 +41,11 @@ namespace GameLib.Tests
 
             var player1 = new Player
             {
-                Color = "Red",
                 Direction = DirectionEnum.ClockWise,
                 Name = "Tomer"
             };
             var player2 = new Player
             {
-                Color = "Black",
                 Direction = DirectionEnum.AntiClockWise,
                 Name = "Dror"
             };

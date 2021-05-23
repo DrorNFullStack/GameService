@@ -20,13 +20,11 @@ namespace GameLib.Tests
             var game = new BackgammonLogic(diceRoller, turnKeeper, gameActionManager, gameBoardFactory);
             var player1 = new Player
             {
-                Color = "Red",
                 Direction = DirectionEnum.ClockWise,
                 Name = "Tomer"
             };
             var player2 = new Player
             {
-                Color = "Black",
                 Direction = DirectionEnum.AntiClockWise,
                 Name = "Dror"
             };

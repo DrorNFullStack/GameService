@@ -20,7 +20,6 @@ namespace GameLib.Tests
 
             var player = new Player
             {
-                Color = "Red",
                 Direction = DirectionEnum.AntiClockWise,
                 RemainingActions = 2,
                 DiceResults = new DiceResult[]
@@ -50,20 +49,19 @@ namespace GameLib.Tests
             //Assert
             Assert.True(isScuccess);
             Assert.True(!board.Bar.IsEmpty);
-            Assert.True(board.Triangles[action.DestinationPosition].GamePieces.Last.Value.Color.Equals(player.Color));
+            Assert.True(board.Triangles[action.DestinationPosition].GamePieces.Last.Value.ControlledBy.Equals(player.Direction));
         }
 
         [Theory]
-        [InlineData("Red", DirectionEnum.AntiClockWise,3,1,4)]
-        [InlineData("Black", DirectionEnum.ClockWise,2,13,11)]
-        public void MovePieceTheory(string color, DirectionEnum direction, int roll,int start, int dest )
+        [InlineData(DirectionEnum.AntiClockWise,3,1,4)]
+        [InlineData(DirectionEnum.ClockWise,2,13,11)]
+        public void MovePieceTheory(DirectionEnum direction, int roll,int start, int dest )
         {
             //Arrange
             var board = new GameBoardFactory(new GamePieceFactory()).Create();
 
             var player = new Player
             {
-                Color = color,
                 Direction = direction,
                 RemainingActions = 2,
                 DiceResults = new DiceResult[]
@@ -92,7 +90,7 @@ namespace GameLib.Tests
             var isSuccess = gameActionManager.Act(action, board, player,out IEnumerable<GameAction> res);
 
             Assert.True(board.Triangles[action.StartingPosition].GamePieces.Count.Equals(expectedCount));
-            Assert.True(board.Triangles[action.DestinationPosition].GamePieces.Last.Value.Color.Equals(player.Color));
+            Assert.True(board.Triangles[action.DestinationPosition].GamePieces.Last.Value.ControlledBy.Equals(player.Direction));
         }
     }
 }

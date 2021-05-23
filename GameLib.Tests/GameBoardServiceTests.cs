@@ -53,40 +53,40 @@ namespace GameLib.Tests
             foreach (var triangle in board)
             {
                 
-                (int position, string color, int amount) expected = (cnt++, "", 0); //1 - 24
+                (int position, DirectionEnum? direction, int amount) expected = (cnt++, null, 0); //1 - 24
                 if (triangle.Position == 1)
                 {
-                    expected = (1, "Red", 2);
+                    expected = (1, DirectionEnum.AntiClockWise, 2);
                 }
                 else if (triangle.Position == 6)
                 {
-                    expected = (6, "Black", 5);
+                    expected = (6, DirectionEnum.ClockWise, 5);
                 }
                 else if (triangle.Position == 8)
                 {
-                    expected = (8, "Black", 3);
+                    expected = (8, DirectionEnum.ClockWise, 3);
                 }
                 else if (triangle.Position == 12)
                 {
-                    expected = (12, "Red", 5);
+                    expected = (12, DirectionEnum.AntiClockWise, 5);
                 }
                 else if (triangle.Position == 13)
                 {
-                    expected = (13, "Black", 5);
+                    expected = (13, DirectionEnum.ClockWise, 5);
                 }
                 else if (triangle.Position == 17)
                 {
-                    expected = (17, "Red", 3);
+                    expected = (17, DirectionEnum.AntiClockWise, 3);
                 }
                 else if (triangle.Position == 19)
                 {
-                    expected = (19, "Red", 5);
+                    expected = (19, DirectionEnum.AntiClockWise, 5);
                 }
                 else if (triangle.Position == 24)
                 {
-                    expected = (24, "Black", 2);
+                    expected = (24, DirectionEnum.ClockWise, 2);
                 }
-                Assert.Equal(expected.color, triangle.PiecesColor);
+                Assert.Equal(expected.direction, triangle.PiecesColor);
                 Assert.Equal(expected.position, triangle.Position);
                 Assert.Equal(expected.amount, triangle.GamePieces.Count);
             }

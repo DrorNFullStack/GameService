@@ -17,10 +17,10 @@ namespace GameLib.Services
             switch (player.Direction)
             {
                 case DirectionEnum.AntiClockWise:
-                    if (action.DestinationPosition - action.StartingPosition < 0) return false;
+                    if (action.DestinationPosition > action.StartingPosition && action.DestinationPosition != 0 && action.StartingPosition != -1) return false;
                     break;
                 case DirectionEnum.ClockWise:
-                    if (action.DestinationPosition - action.StartingPosition > 0) return false;
+                    if (action.DestinationPosition < action.StartingPosition && action.DestinationPosition != 0 && action.StartingPosition != -1) return false;
                     break;
             }
             //if player has gp on bar he can't move from triangles

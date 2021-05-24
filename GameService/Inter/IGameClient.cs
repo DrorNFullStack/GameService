@@ -9,11 +9,12 @@ namespace GameService.Inter
 {
     public interface IGameClient
     {
-        Task GameCreatedAsync(); 
-        Task GameRequested(User user); 
-        Task InvitedToGameAsync(string gameID);
-        Task ErrorHandling(string msg);
-        Task LobbyUpdatedAsync(User user);
+        //sends the full lobby
         Task ReciveFullLobbyAsync(IEnumerable<User> lobby);
+        //sends the new user only
+        Task UserJoinedLobbyAsync(User user);
+        //sends the disconnected user only
+        Task UserLeftLobbyAsync(User user);
+        Task GameRequested(string senderUsername);
     }
 }

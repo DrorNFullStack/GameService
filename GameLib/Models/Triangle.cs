@@ -6,6 +6,8 @@ namespace GameLib.Models
     {
         public int Position { get; set; }
         public LinkedList<GamePiece> GamePieces { get; set; }
-        public DirectionEnum? PiecesColor => GamePieces?.Last?.Value.ControlledBy;
+        public DirectionEnum? PiecesDirection => GamePieces?.Last?.Value.ControlledBy;
+        public bool IsEmpty => GamePieces?.Count > 0;
+        public bool IsHome => GamePieces?.Count > 1;
     }
 }

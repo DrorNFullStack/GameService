@@ -7,8 +7,7 @@ namespace GameService.Models
 {
     public class User
     {
-        public string Username { get; set; }
-        public Guid GameID { get; set; }
+        public string GameID { get; set; }
         public string UserID { get; set; }
     }
 }

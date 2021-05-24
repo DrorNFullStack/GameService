@@ -1,59 +1,96 @@
 ﻿using GameService.Inter;
-using GameService.GameRepositories;
 using GameService.Models;
 using Microsoft.AspNetCore.SignalR;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameService.OnlineUserManager;
 using Microsoft.AspNetCore.Authorization;
-using System.Security.Claims;
+using GameService.GameRepositories;
 
 namespace GameService.Hubs
 {
     [Authorize]
     public class GameHub : Hub<IGameClient>
     {
-        private readonly IOnlineUserManager _onlineUserManager;
-        public GameHub(IOnlineUserManager onlineUserManager)
+        private readonly IOnlineUserManager onlineUserManager;
+        private readonly IGameRepository gameRepository;
+        public GameHub(IOnlineUserManager onlineUserManager, IGameRepository gameRepository)
         {
-            this._onlineUserManager = onlineUserManager;
+            this.onlineUserManager = onlineUserManager;
+            this.gameRepository = gameRepository;
         }
 
         public override async Task OnConnectedAsync()
         {
-            User user = new User { UserID = Context.ConnectionId, Username = GetNameFromClaims() };
-            await _onlineUserManager.AddLiveUser(user);
-            var excluded = await _onlineUserManager.GetUnavailbeUsers();
-            excluded = excluded.Append(user);
-            await Clients.AllExcept(excluded.Select(u=>u.UserID).ToList().AsReadOnly()).LobbyUpdatedAsync(user);
-            await base.OnConnectedAsync();
+            //check if new user
+            bool isUserConnected = await onlineUserManager.IsUserConnected(Context.UserIdentifier);
+            if (isUserConnected)
+            {
+                return;
+            }
+
+            //add the new user
+            var user = new User { UserID = Context.UserIdentifier };
+            await onlineUserManager.AddLiveUser(user);
+
+            //alert the lobby of a new user
+           await Clients.AllExcept(Context.ConnectionId).UserJoinedLobbyAsync(user);
+
+            //send back the full lobby
+            await Clients.Caller.ReciveFullLobbyAsync(await onlineUserManager.GetAvailabeUsers());
         }
 
         public override async Task OnDisconnectedAsync(Exception exception)
         {
-            var user = await _onlineUserManager.RemoveLiveUser(Context.ConnectionId);
-            var excluded = await _onlineUserManager.GetUnavailbeUsers();
-            await Clients.AllExcept(excluded.Select(u=>u.UserID).ToList().AsReadOnly()).LobbyUpdatedAsync(user);
-            await base.OnDisconnectedAsync(exception);
+            //check if user is not connected
+            bool isUserConnected = await onlineUserManager.IsUserConnected(Context.UserIdentifier);
+            if (!isUserConnected)
+            {
+                return;
+            }
+
+            //remove the user
+            var user = await onlineUserManager.RemoveLiveUser(Context.ConnectionId);
+
+            //alert the lobby of a dissconnect
+            await Clients.AllExcept(Context.ConnectionId).UserLeftLobbyAsync(user);
+            
         }
 
-        // Gets The lobby of online users (that are free to play with)
-        public async Task GetLobbyAsync()
+
+        public async Task RequestGame(User receiver)
         {
-           var lobby = await _onlineUserManager.GetAvailbeUsers();
-           await Clients.Caller.ReciveFullLobbyAsync(lobby);
+            //check user online and available
+            var isConnected = await onlineUserManager.IsUserConnected(receiver.UserID);
+            if (!isConnected)
+            {
+                return;
+            }
+            bool isAvailable = await onlineUserManager.IsUserAvailable(receiver.UserID);
+            if (!isAvailable)
+            {
+                return;
+            }
+            //send the request with the sender's identifier
+            await Clients.User(receiver.UserID).GameRequested(Context.UserIdentifier);
         }
-
-        private string GetNameFromClaims() =>
-            Context.User.Claims.First(c => c.Type == ClaimTypes.Name).Value;
-
-        //public async Task RequestGame(User receiver, User sender)
-        //{
-        //    await Clients.User(receiver.UserID).GameRequested(sender);
-        //}
-
+        public async Task AcceptGame(string senderUsername)
+        {
+            //check user online and available
+            var isConnected = await onlineUserManager.IsUserConnected(senderUsername);
+            if (!isConnected)
+            {
+                return;
+            }
+            bool isAvailable = await onlineUserManager.IsUserAvailable(senderUsername);
+            if (!isAvailable)
+            {
+                return;
+            }
+            //create the game and add them both to it
+            //send them the game
+        }
         //public async Task Invite(User host, IEnumerable<string> users)
         //{
         //    if (host.GameID == Guid.Empty)

@@ -36,7 +36,7 @@ namespace GameService
             services.AddAuthorization(o =>
             {
                 o.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
-                    .RequireClaim(ClaimTypes.Name)
+                    .RequireClaim(ClaimTypes.NameIdentifier)
                     .Build();
             });
             services.AddSignalR();

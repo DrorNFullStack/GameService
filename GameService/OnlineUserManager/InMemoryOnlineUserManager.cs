@@ -16,7 +16,7 @@ namespace GameService.OnlineUserManager
             return Task.Run(() => dic.TryAdd(user.UserID, user));
         }
 
-        public async Task<IEnumerable<User>> GetAvailbeUsers()
+        public async Task<IEnumerable<User>> GetAvailabeUsers()
         {
             var users = await GetLiveUsers();
             return users.Where(u => u.GameID.Equals(Guid.Empty));

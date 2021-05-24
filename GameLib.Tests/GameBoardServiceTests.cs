@@ -86,7 +86,7 @@ namespace GameLib.Tests
                 {
                     expected = (24, DirectionEnum.ClockWise, 2);
                 }
-                Assert.Equal(expected.direction, triangle.PiecesColor);
+                Assert.Equal(expected.direction, triangle.PiecesDirection);
                 Assert.Equal(expected.position, triangle.Position);
                 Assert.Equal(expected.amount, triangle.GamePieces.Count);
             }

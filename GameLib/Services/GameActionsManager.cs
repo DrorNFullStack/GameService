@@ -41,18 +41,20 @@ namespace GameLib.Services
             {
                 board.SafePieces.Add(gamePiece);
             }
+            //going to a triangle (validator validates if can eat)
             //going to home / empty triangle
-            else if (board.Triangles[action.DestinationPosition].PiecesColor.Equals(player.Direction) ||
-                     board.Triangles[action.DestinationPosition].GamePieces.Count < 1)
+            else
             {
-                board.Triangles[action.DestinationPosition].GamePieces.AddLast(gamePiece);
-            }
-            //going to KILL
-            else if (board.Triangles[action.DestinationPosition].GamePieces.Count == 1)
-            {
-                var deadPiece = board.Triangles[action.DestinationPosition].GamePieces.Last.Value;
-                board.Triangles[action.DestinationPosition].GamePieces.RemoveLast();
-                board.Bar.Pieces.Add(deadPiece);
+                //if not empty triangle or not my direction
+                if (!board.Triangles[action.DestinationPosition].PiecesDirection?.Equals(player.Direction) ?? false)
+                {
+                    //remove the dest piece
+                    var deadPiece = board.Triangles[action.DestinationPosition].GamePieces.Last.Value;
+                    board.Triangles[action.DestinationPosition].GamePieces.RemoveLast();
+                    //add it to the bar
+                    board.Bar.Pieces.Add(deadPiece);
+                }
+                //add the piece to the destenation triangle
                 board.Triangles[action.DestinationPosition].GamePieces.AddLast(gamePiece);
             }
             //consume an action
@@ -85,7 +87,7 @@ namespace GameLib.Services
                 }
                 else
                 {
-                    foreach (var triangle in board.Triangles.Where(t => t.Value.PiecesColor.Equals(player.Direction)))
+                    foreach (var triangle in board.Triangles.Where(t => t.Value.PiecesDirection.Equals(player.Direction)))
                     {
                         GameAction action = new GameAction
                         {

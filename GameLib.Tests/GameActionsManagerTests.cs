@@ -20,7 +20,7 @@ namespace GameLib.Tests
 
             var player = new Player
             {
-                Direction = DirectionEnum.AntiClockWise,
+                Direction = DirectionEnum.ClockWise,
                 RemainingActions = 2,
                 DiceResults = new DiceResult[]
                 {
@@ -53,9 +53,9 @@ namespace GameLib.Tests
         }
 
         [Theory]
-        [InlineData(DirectionEnum.AntiClockWise,3,1,4)]
-        [InlineData(DirectionEnum.ClockWise,2,13,11)]
-        public void MovePieceTheory(DirectionEnum direction, int roll,int start, int dest )
+        [InlineData(1,4,3,DirectionEnum.ClockWise)]
+        [InlineData(24,20,4,DirectionEnum.AntiClockWise)]
+        public void MovePieceTheory(int start, int dest, int roll, DirectionEnum direction)
         {
             //Arrange
             var board = new GameBoardFactory(new GamePieceFactory()).Create();

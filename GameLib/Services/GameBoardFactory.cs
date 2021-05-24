@@ -30,19 +30,19 @@ namespace GameLib.Services
                     case 0: break;
                     case 1:
                         amount = 2;
-                        direction = DirectionEnum.AntiClockWise;
+                        direction = DirectionEnum.ClockWise;
                         break;
                     case 6:
                         amount = 5;
-                        direction = DirectionEnum.ClockWise;
+                        direction = DirectionEnum.AntiClockWise;
                         break;
                     case 8:
                         amount = 3;
-                        direction = DirectionEnum.ClockWise;
+                        direction = DirectionEnum.AntiClockWise;
                         break;
                     case 12:
                         amount = 5;
-                        direction = DirectionEnum.AntiClockWise;
+                        direction = DirectionEnum.ClockWise;
                         break;
                 }
 

@@ -9,6 +9,6 @@ namespace GameLib.Models
     {
         public List<GamePiece> Pieces { get; set; } = new List<GamePiece>();
         public bool IsEmpty => Pieces.Count == 0;
-        public DirectionEnum? PiecesColor => Pieces?.FirstOrDefault()?.ControlledBy;
+        public DirectionEnum? PiecesDirection => Pieces?.FirstOrDefault()?.ControlledBy;
     }
 }

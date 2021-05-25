@@ -9,5 +9,6 @@ namespace GameService.Models
     {
         public string GameID { get; set; }
         public string UserID { get; set; }
+        public List<string> ConnectionIds { get; set; } = new List<string>();
     }
 }

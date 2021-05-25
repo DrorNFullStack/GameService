@@ -1,32 +1,38 @@
-﻿//using GameLib;
-//using GameLib.Models;
-//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
+﻿using GameLib;
+using GameLib.Models;
+using GameService.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
-//namespace GameService.GameRepositories
-//{
-//    public class InMemoryGameRepository : IGameRepository
-//    {
-//        Dictionary<Guid, BackgammonLogic> _mem = new Dictionary<Guid, BackgammonLogic>();
-//        public Task CloseGameAsync(Guid id)
-//        {
-//            return Task.FromResult(_mem.Remove(id));
-//        }
+namespace GameService.GameRepositories
+{
+    public class InMemoryGameRepository : IGameRepository
+    {
+        private readonly Dictionary<string, BackgammonLogic> mem;
+        private readonly IServiceProvider serviceProvider;
+        public InMemoryGameRepository(IServiceProvider serviceProvider)
+        {
+            mem = new Dictionary<string, BackgammonLogic>();
+            this.serviceProvider = serviceProvider;
+        }
 
-//        public async Task<Game> GenerateGameAsync()
-//        {
-//            Game game = new Game();
-//            game.GameID = Guid.NewGuid();
-//            _mem.Add(game.GameID, game);
-//            return game;
-//        }
+        public Task<GameView> GenerateGameAsync(string gameID)
+        {
+            if (!mem.ContainsKey(gameID))
+            {
+                BackgammonLogic game = (BackgammonLogic)serviceProvider.GetService(typeof(BackgammonLogic));
+                mem.Add(gameID, game);
+                return Task.FromResult(new GameView
+                {
+                    Triangles = game.Board.Triangles.Values.OrderBy(t => t.Position),
+                    Bar = game.Board.Bar.Pieces,
+                    SafePieces = game.Board.SafePieces
+                });
+            }
+            return null;
 
-//        public async Task<Game> GetGameAsync(Guid id)
-//        {
-//            _mem.TryGetValue(id, out Game game);
-//            return game;
-//        }
-//    }
-//}
+        }
+    }
+}

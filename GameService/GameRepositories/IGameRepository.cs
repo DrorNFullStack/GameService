@@ -1,4 +1,6 @@
-﻿using GameLib.Models;
+﻿using GameLib;
+using GameLib.Models;
+using GameService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +10,7 @@ namespace GameService.GameRepositories
 {
     public interface IGameRepository
     {
-        public Task<Game> GenerateGameAsync();
-        public Task CloseGameAsync(Guid id);
-        public Task<Game> GetGameAsync(Guid id);
+        public Task<GameView> GenerateGameAsync(string gameID);
+        Task<BackgammonLogic> GetGame(string gameID);
     }
 }

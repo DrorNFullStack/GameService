@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using GameService.OnlineUserManager;
 using Microsoft.AspNetCore.Authorization;
 using GameService.GameRepositories;
+using System.Collections.Generic;
+using GameLib;
+using GameLib.Models;
 
 namespace GameService.Hubs
 {
@@ -24,18 +27,25 @@ namespace GameService.Hubs
         public override async Task OnConnectedAsync()
         {
             //check if new user
-            bool isUserConnected = await onlineUserManager.IsUserConnected(Context.UserIdentifier);
-            if (isUserConnected)
+            var user = await onlineUserManager.GetUserAsync(Context.UserIdentifier);
+            if (user != null)
             {
+                //user connected twice (new connection id)
+                if (!user.ConnectionIds.Contains(Context.ConnectionId))
+                    user.ConnectionIds.Add(Context.ConnectionId);
                 return;
             }
 
             //add the new user
-            var user = new User { UserID = Context.UserIdentifier };
+            user = new User
+            {
+                UserID = Context.UserIdentifier,
+                ConnectionIds = new List<string> { Context.ConnectionId }
+            };
             await onlineUserManager.AddLiveUser(user);
 
             //alert the lobby of a new user
-           await Clients.AllExcept(Context.ConnectionId).UserJoinedLobbyAsync(user);
+            await Clients.AllExcept(Context.ConnectionId).UserJoinedLobbyAsync(user);
 
             //send back the full lobby
             await Clients.Caller.ReciveFullLobbyAsync(await onlineUserManager.GetAvailabeUsers());
@@ -55,41 +65,84 @@ namespace GameService.Hubs
 
             //alert the lobby of a dissconnect
             await Clients.AllExcept(Context.ConnectionId).UserLeftLobbyAsync(user);
-            
+
         }
 
 
-        public async Task RequestGame(User receiver)
+        public async Task RequestGame(string reciverUsername)
         {
             //check user online and available
-            var isConnected = await onlineUserManager.IsUserConnected(receiver.UserID);
-            if (!isConnected)
-            {
-                return;
-            }
-            bool isAvailable = await onlineUserManager.IsUserAvailable(receiver.UserID);
-            if (!isAvailable)
-            {
-                return;
-            }
+            User sender = await onlineUserManager.GetUserAsync(Context.ConnectionId);
+            User reciver = await onlineUserManager.GetUserAsync(reciverUsername);
+
+            //check users online
+            if (sender is null || reciver is null) return;
+
             //send the request with the sender's identifier
-            await Clients.User(receiver.UserID).GameRequested(Context.UserIdentifier);
+            await Clients.User(reciverUsername).GameRequested(Context.UserIdentifier);
         }
         public async Task AcceptGame(string senderUsername)
         {
-            //check user online and available
-            var isConnected = await onlineUserManager.IsUserConnected(senderUsername);
-            if (!isConnected)
-            {
-                return;
-            }
-            bool isAvailable = await onlineUserManager.IsUserAvailable(senderUsername);
-            if (!isAvailable)
-            {
-                return;
-            }
-            //create the game and add them both to it
+            User sender = await onlineUserManager.GetUserAsync(senderUsername);
+            User reciver = await onlineUserManager.GetUserAsync(Context.UserIdentifier);
+
+            //check users online
+            if (sender is null || reciver is null) return;
+
+            //create the game 
+            var gameView = await gameRepository.GenerateGameAsync(senderUsername);
+
+            //update the game for the players
+            await onlineUserManager.UpdateUserGame(sender.UserID, senderUsername);
+            await onlineUserManager.UpdateUserGame(reciver.UserID, senderUsername);
+
+            //add to group
+            //add all connections for both the sender and the reciver
+            var connectionIds = sender
+                                    .ConnectionIds
+                                    .Concat(reciver.ConnectionIds)
+                                    .ToList();
+
+            connectionIds.ForEach(async cnn =>
+                await Groups.AddToGroupAsync(cnn, senderUsername));
+
             //send them the game
+           await Clients.Group(senderUsername).ReciveGameView(gameView);
+        }
+
+        public async Task StartGame()
+        {
+            //load the users and verify
+            var user1 = await onlineUserManager.GetUserAsync(Context.UserIdentifier);
+            var user2 = await onlineUserManager.GetOpponentAsync(user1);
+            if (user1 is null || user2 is null) return;
+
+            //load the game
+            BackgammonLogic game = await gameRepository.GetGame(user1.GameID);
+            if (game is null) return;
+
+            //orgenize data for players
+            var player1 = new Player
+            {
+                Name = user1.UserID,
+                Direction = DirectionEnum.ClockWise
+            };
+            var player2 = new Player
+            {
+                Name = user2.UserID,
+                Direction = DirectionEnum.AntiClockWise
+            };
+            //preform startGame action
+            var turn = game.StartGame(player1, player2);
+
+            //return the turn 
+            await Clients.Caller.ReciveTurn(turn);
+        }
+        public async Task PreformAction(GameAction action)
+        {
+            var user = await onlineUserManager.GetUserAsync(Context.UserIdentifier);
+            var game = await gameRepository.GetGame(user.GameID);
+            var turn  = game.PerformAction(action);
         }
         //public async Task Invite(User host, IEnumerable<string> users)
         //{

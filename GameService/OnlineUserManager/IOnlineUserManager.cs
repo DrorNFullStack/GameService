@@ -12,9 +12,11 @@ namespace GameService.OnlineUserManager
         Task<IEnumerable<User>> GetAvailabeUsers();
         Task<bool> AddLiveUser(User user);
         Task<User> RemoveLiveUser(string userID);
-        Task UpdateUserGame(string connectionId, Guid gameID);
+        Task UpdateUserGame(string userIdentifier, string gameID);
         Task<IEnumerable<User>> GetUnavailbeUsers();
         Task<bool> IsUserConnected(string userIdentifier);
         Task<bool> IsUserAvailable(string userID);
+        Task<User> GetUserAsync(string userIdentifier);
+        Task<User> GetOpponentAsync(User user);
     }
 }

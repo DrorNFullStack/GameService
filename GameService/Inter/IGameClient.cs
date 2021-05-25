@@ -16,5 +16,7 @@ namespace GameService.Inter
         //sends the disconnected user only
         Task UserLeftLobbyAsync(User user);
         Task GameRequested(string senderUsername);
+        Task ReciveGameView(GameView gameView);
+        Task ReciveTurn(Turn turn);
     }
 }

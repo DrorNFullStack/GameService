@@ -107,7 +107,7 @@ namespace GameService.Hubs
                 await Groups.AddToGroupAsync(cnn, senderUsername));
 
             //send them the game
-           await Clients.Group(senderUsername).ReciveGameView(gameView);
+           await Clients.Group(senderUsername).ReceiveGameView(gameView);
         }
 
         public async Task StartGame()
@@ -136,7 +136,7 @@ namespace GameService.Hubs
             var turn = game.StartGame(player1, player2);
 
             //return the turn 
-            await Clients.Caller.ReciveTurn(turn);
+            await Clients.Caller.ReceiveTurn(turn);
         }
         public async Task PreformAction(GameAction action)
         {
